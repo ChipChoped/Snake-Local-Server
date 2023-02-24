@@ -1,8 +1,11 @@
+import org.json.JSONObject;
+import routes.UserAPI;
+import utils.Response;
+
 import java.net.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+
+import static functions.LogIn.logIn;
 
 public class Server extends Thread {
     final static int port = 9632;
@@ -33,6 +36,8 @@ public class Server extends Thread {
             PrintStream out = new PrintStream(socket.getOutputStream());
 
             System.out.println(in.readLine());
+
+            logIn(in, out);
 
             socket.close();
         } catch (Exception e) {
