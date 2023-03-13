@@ -1,11 +1,10 @@
 import org.json.JSONObject;
-import routes.UserAPI;
-import utils.Response;
 
 import java.net.*;
 import java.io.*;
 
-import static functions.LogIn.logIn;
+import static functions.Logs.logIn;
+import static functions.Logs.logOut;
 
 public class Server extends Thread {
     final static int port = 9632;
@@ -34,10 +33,37 @@ public class Server extends Thread {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintStream out = new PrintStream(socket.getOutputStream());
+            boolean connected = true;
+            boolean online = false;
+            JSONObject jsonRequest;
 
             System.out.println(in.readLine());
 
-            logIn(in, out);
+            while (connected) {
+                if (!online) {
+                    jsonRequest = new JSONObject(in.readLine());
+
+                    if (jsonRequest.get("type").equals("disconnect"))
+                        break;
+                    else if (jsonRequest.get("type").equals("log-in"))
+                        online = logIn(in, out, jsonRequest);
+                }
+
+                jsonRequest = new JSONObject(in.readLine());
+
+                switch ((String) jsonRequest.get("type")) {
+                    case "save-game":
+
+                        break;
+                    case "log-out":
+                        logOut(in, out, jsonRequest.getInt("id"));
+                        online = false;
+                        break;
+                    case "disconnect":
+                        connected = false;
+                        break;
+                }
+            }
 
             socket.close();
         } catch (Exception e) {

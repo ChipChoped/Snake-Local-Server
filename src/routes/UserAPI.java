@@ -15,7 +15,7 @@ public class UserAPI {
     private static final String URL = "http://localhost:8080/Snake/rest/user";
 
     public static Response loginPOST(String username, String password) throws IOException {
-        URL obj = new URL(URL);
+        URL obj = new URL(URL + "/log-in");
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
@@ -24,6 +24,23 @@ public class UserAPI {
 
         String jsonInputString = "{\"username\": \"" + username + "\", \"password\": \"" + password + "\"}";
 
+        return getResponse(con, jsonInputString);
+    }
+
+    public static Response logOutPOST(int ID) throws IOException {
+        URL obj = new URL(URL + "/log-out");
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Accept", "application/json");
+        con.setDoOutput(true);
+
+        String jsonInputString = "{\"id\": " + ID + "}";
+
+        return getResponse(con, jsonInputString);
+    }
+
+    private static Response getResponse(HttpURLConnection con, String jsonInputString) throws IOException {
         try(OutputStream os = con.getOutputStream()) {
             byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
@@ -31,6 +48,7 @@ public class UserAPI {
 
         int responseCode = con.getResponseCode();
         String responseLine = null;
+        JSONObject jsonResponse = new JSONObject();
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             try (BufferedReader br = new BufferedReader(
@@ -40,7 +58,10 @@ public class UserAPI {
                     response.append(responseLine.trim());
                 }
 
-                return new Response(con.getResponseCode(), new JSONObject(response.toString()));
+                if (!response.isEmpty())
+                    jsonResponse = new JSONObject(response.toString());
+
+                return new Response(con.getResponseCode(), jsonResponse);
             }
         }
         else {
@@ -51,7 +72,10 @@ public class UserAPI {
                     response.append(responseLine.trim());
                 }
 
-                return new Response(con.getResponseCode(), new JSONObject(response.toString()));
+                if (!response.isEmpty())
+                    jsonResponse = new JSONObject(response.toString());
+
+                return new Response(con.getResponseCode(), jsonResponse);
             }
         }
     }
