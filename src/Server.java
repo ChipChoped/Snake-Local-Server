@@ -40,7 +40,7 @@ public class Server extends Thread {
             System.out.println(in.readLine());
 
             while (connected) {
-                if (!online) {
+                while (!online) {
                     jsonRequest = new JSONObject(in.readLine());
 
                     if (jsonRequest.get("type").equals("disconnect"))
