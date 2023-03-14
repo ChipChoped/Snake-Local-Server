@@ -1,8 +1,6 @@
 package functions;
 
 import org.json.JSONObject;
-import routes.UserAPI;
-import utils.Response;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,10 +10,10 @@ import java.net.HttpURLConnection;
 import static routes.UserAPI.logOutPOST;
 import static routes.UserAPI.loginPOST;
 
-public class Logs {
+public class Response {
     @SuppressWarnings("unchecked")
     public static boolean logIn(BufferedReader in, PrintStream out, JSONObject jsonRequest) throws IOException {
-        Response response = loginPOST((String) jsonRequest.get("username"), (String) jsonRequest.get("password"));
+        utils.Response response = loginPOST((String) jsonRequest.get("username"), (String) jsonRequest.get("password"));
         JSONObject jsonResponse = new JSONObject();
 
         if (response.code() == HttpURLConnection.HTTP_OK) {
@@ -35,7 +33,7 @@ public class Logs {
     }
 
     public static boolean logOut(BufferedReader in, PrintStream out, int ID) throws IOException {
-        Response response = logOutPOST(ID);
+        utils.Response response = logOutPOST(ID);
 
         JSONObject jsonResponse = new JSONObject();
 

@@ -3,8 +3,8 @@ import org.json.JSONObject;
 import java.net.*;
 import java.io.*;
 
-import static functions.Logs.logIn;
-import static functions.Logs.logOut;
+import static functions.Response.logIn;
+import static functions.Response.logOut;
 
 public class Server extends Thread {
     final static int port = 9632;
@@ -39,12 +39,13 @@ public class Server extends Thread {
 
             System.out.println(in.readLine());
 
+            response:
             while (connected) {
                 while (!online) {
                     jsonRequest = new JSONObject(in.readLine());
 
                     if (jsonRequest.get("type").equals("disconnect"))
-                        break;
+                        break response;
                     else if (jsonRequest.get("type").equals("log-in"))
                         online = logIn(in, out, jsonRequest);
                 }
