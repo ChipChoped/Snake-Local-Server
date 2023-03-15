@@ -3,8 +3,7 @@ import org.json.JSONObject;
 import java.net.*;
 import java.io.*;
 
-import static functions.Response.logIn;
-import static functions.Response.logOut;
+import static functions.Response.*;
 
 public class Server extends Thread {
     final static int port = 9632;
@@ -54,7 +53,7 @@ public class Server extends Thread {
 
                 switch ((String) jsonRequest.get("type")) {
                     case "save-game":
-
+                        saveGame(in, out, jsonRequest);
                         break;
                     case "log-out":
                         logOut(in, out, jsonRequest.getInt("id"));

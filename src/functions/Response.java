@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
 
+import static routes.GameAPI.saveGamePUT;
 import static routes.UserAPI.logOutPOST;
 import static routes.UserAPI.loginPOST;
 
@@ -39,6 +40,26 @@ public class Response {
 
         if (response.code() == HttpURLConnection.HTTP_OK) {
             jsonResponse.put("type", "return-log-out");
+            out.println(jsonResponse);
+
+            return true;
+        }
+        else {
+            jsonResponse.put("type", "error");
+            jsonResponse.put("message", response.content().get("message"));
+            out.println(jsonResponse);
+
+            return false;
+        }
+    }
+
+    public static boolean saveGame(BufferedReader in, PrintStream out, JSONObject jsonRequest) throws IOException {
+        utils.Response response = saveGamePUT(jsonRequest.getInt("user-id"), jsonRequest.getBoolean("won"), jsonRequest.getInt("score"), (String) jsonRequest.get("date"));
+
+        JSONObject jsonResponse = new JSONObject();
+
+        if (response.code() == HttpURLConnection.HTTP_CREATED) {
+            jsonResponse.put("type", "return-save-game");
             out.println(jsonResponse);
 
             return true;
