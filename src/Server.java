@@ -1,4 +1,10 @@
+import behaviors.NormalBehavior;
+import functions.OnlineGameManager;
+import functions.Response;
+import model.InputMap;
+import model.SnakeGame;
 import org.json.JSONObject;
+import strategies.InteractiveStrategy;
 
 import java.net.*;
 import java.io.*;
@@ -35,6 +41,7 @@ public class Server extends Thread {
             boolean connected = true;
             boolean online = false;
             JSONObject jsonRequest;
+            int userID = -1;
 
             System.out.println(in.readLine());
 
@@ -45,15 +52,19 @@ public class Server extends Thread {
 
                     if (jsonRequest.get("type").equals("disconnect"))
                         break response;
-                    else if (jsonRequest.get("type").equals("log-in"))
-                        online = logIn(in, out, jsonRequest);
+                    else if (jsonRequest.get("type").equals("log-in")) {
+                        userID = logIn(in, out, jsonRequest);
+                        online = userID != -1;
+                    }
                 }
 
                 jsonRequest = new JSONObject(in.readLine());
+                System.out.println(userID);
 
                 switch ((String) jsonRequest.get("type")) {
-                    case "save-game":
-                        saveGame(in, out, jsonRequest);
+                    case "start-game":
+                        OnlineGameManager manager = new OnlineGameManager(socket);
+                        manager.startGame(userID);
                         break;
                     case "log-out":
                         logOut(in, out, jsonRequest.getInt("id"));

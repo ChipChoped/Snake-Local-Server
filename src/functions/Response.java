@@ -1,19 +1,27 @@
 package functions;
 
+import controllers.ControllerSnakeGame;
+import model.SnakeGame;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import strategies.InteractiveStrategy;
+import utils.Snake;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
+import java.util.Observable;
+import java.util.Observer;
 
+import static behaviors.Behaviors.NORMAL;
 import static routes.GameAPI.saveGamePUT;
 import static routes.UserAPI.logOutPOST;
 import static routes.UserAPI.loginPOST;
 
 public class Response {
     @SuppressWarnings("unchecked")
-    public static boolean logIn(BufferedReader in, PrintStream out, JSONObject jsonRequest) throws IOException {
+    public static int logIn(BufferedReader in, PrintStream out, JSONObject jsonRequest) throws IOException {
         utils.Response response = loginPOST((String) jsonRequest.get("username"), (String) jsonRequest.get("password"));
         JSONObject jsonResponse = new JSONObject();
 
@@ -22,14 +30,14 @@ public class Response {
             jsonResponse.put("id", response.content().getInt("id"));
             out.println(jsonResponse);
 
-            return true;
+            return response.content().getInt("id");
         }
         else {
             jsonResponse.put("type", "error");
             jsonResponse.put("message", response.content().get("message"));
             out.println(jsonResponse);
 
-            return false;
+            return -1;
         }
     }
 
