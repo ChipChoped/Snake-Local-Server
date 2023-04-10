@@ -2,6 +2,7 @@ package routes;
 
 import org.json.JSONObject;
 import utils.Response;
+import utils.UserIDToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,15 +28,16 @@ public class UserAPI {
         return getResponse(con, jsonInputString);
     }
 
-    public static Response logOutPOST(int ID) throws IOException {
+    public static Response logOutPOST(UserIDToken userIDToken) throws IOException {
         URL obj = new URL(URL + "/log-out");
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Authorization", userIDToken.token());
         con.setDoOutput(true);
 
-        String jsonInputString = "{\"id\": " + ID + "}";
+        String jsonInputString = "{\"id\": " + userIDToken.ID() + "}";
 
         return getResponse(con, jsonInputString);
     }
@@ -61,7 +63,7 @@ public class UserAPI {
                 if (!response.isEmpty())
                     jsonResponse = new JSONObject(response.toString());
 
-                return new Response(con.getResponseCode(), jsonResponse);
+                return new Response(con.getResponseCode(), jsonResponse, con.getHeaderField("Authorization"));
             }
         }
         else {
@@ -75,7 +77,7 @@ public class UserAPI {
                 if (!response.isEmpty())
                     jsonResponse = new JSONObject(response.toString());
 
-                return new Response(con.getResponseCode(), jsonResponse);
+                return new Response(con.getResponseCode(), jsonResponse, null);
             }
         }
     }

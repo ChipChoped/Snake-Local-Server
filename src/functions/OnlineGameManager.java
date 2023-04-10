@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import strategies.InteractiveStrategy;
 import utils.AgentAction;
 import utils.Snake;
+import utils.UserIDToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class OnlineGameManager implements Observer {
         System.out.println("???");
     }
 
-    public void startGame(int userID) throws Exception {
+    public void startGame(UserIDToken userIDToken) throws Exception {
         this.controller =  new ControllerSnakeGame(100, new InteractiveStrategy(), System.getProperty("user.dir") + "/layout/aloneNoWall.lay");
         this.game = controller.getGame();
         JSONObject jsonRequest;
@@ -84,7 +85,7 @@ public class OnlineGameManager implements Observer {
         }
 
         if (!game.gameContinue())
-            saveGamePUT(userID, game.isWon(), game.getScore(), String.valueOf(now()));
+            saveGamePUT(userIDToken, game.isWon(), game.getScore(), String.valueOf(now()));
     }
 
     private void gameToJSON(BufferedReader in, PrintStream out, JSONObject jsonResponse, SnakeGame game) {

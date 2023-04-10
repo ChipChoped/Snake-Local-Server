@@ -2,6 +2,7 @@ package routes;
 
 import org.json.JSONObject;
 import utils.Response;
+import utils.UserIDToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,15 +15,17 @@ import java.nio.charset.StandardCharsets;
 public class GameAPI {
     private static final String URL = "http://localhost:8080/Snake/rest/game";
 
-    public static Response saveGamePUT(int userID, Boolean won, int score, String date) throws IOException {
+    public static Response saveGamePUT(UserIDToken userIDToken, Boolean won, int score, String date) throws IOException {
         java.net.URL obj = new URL(URL + "/save");
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("PUT");
         con.setRequestProperty("Content-Type", "application/json");
         con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Authorization", userIDToken.token());
         con.setDoOutput(true);
 
-        String jsonInputString = "{\"user_id\": " + userID + ", \"won\": " + won + ", \"score\": " + score + ", \"date\": \"" + date + "\"}";
+
+        String jsonInputString = "{\"user_id\": " + userIDToken.ID() + ", \"won\": " + won + ", \"score\": " + score + ", \"date\": \"" + date + "\"}";
 
         try(OutputStream os = con.getOutputStream()) {
             byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
@@ -44,7 +47,7 @@ public class GameAPI {
                 if (!response.isEmpty())
                     jsonResponse = new JSONObject(response.toString());
 
-                return new Response(con.getResponseCode(), jsonResponse);
+                return new Response(con.getResponseCode(), jsonResponse, null);
             }
         }
         else {
@@ -58,7 +61,7 @@ public class GameAPI {
                 if (!response.isEmpty())
                     jsonResponse = new JSONObject(response.toString());
 
-                return new Response(con.getResponseCode(), jsonResponse);
+                return new Response(con.getResponseCode(), jsonResponse, null);
             }
         }
 

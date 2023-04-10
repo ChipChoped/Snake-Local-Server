@@ -5,6 +5,7 @@ import model.InputMap;
 import model.SnakeGame;
 import org.json.JSONObject;
 import strategies.InteractiveStrategy;
+import utils.UserIDToken;
 
 import java.net.*;
 import java.io.*;
@@ -41,7 +42,7 @@ public class Server extends Thread {
             boolean connected = true;
             boolean online = false;
             JSONObject jsonRequest;
-            int userID = -1;
+            UserIDToken userIDToken = new UserIDToken(-1, null);
 
             System.out.println(in.readLine());
 
@@ -53,21 +54,21 @@ public class Server extends Thread {
                     if (jsonRequest.get("type").equals("disconnect"))
                         break response;
                     else if (jsonRequest.get("type").equals("log-in")) {
-                        userID = logIn(in, out, jsonRequest);
-                        online = userID != -1;
+                        userIDToken = logIn(in, out, jsonRequest);
+                        online = userIDToken.ID() != -1;
                     }
                 }
 
                 jsonRequest = new JSONObject(in.readLine());
-                System.out.println(userID);
+                System.out.println(userIDToken);
 
                 switch ((String) jsonRequest.get("type")) {
                     case "start-game":
                         OnlineGameManager manager = new OnlineGameManager(socket);
-                        manager.startGame(userID);
+                        manager.startGame(userIDToken);
                         break;
                     case "log-out":
-                        logOut(in, out, jsonRequest.getInt("id"));
+                        logOut(socket, in, out, userIDToken);
                         online = false;
                         break;
                     case "disconnect":
