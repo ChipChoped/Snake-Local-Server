@@ -60,7 +60,6 @@ public class Server extends Thread {
                 }
 
                 jsonRequest = new JSONObject(in.readLine());
-                System.out.println(userIDToken);
 
                 switch ((String) jsonRequest.get("type")) {
                     case "start-game":
@@ -68,7 +67,7 @@ public class Server extends Thread {
                         manager.startGame(userIDToken);
                         break;
                     case "log-out":
-                        logOut(socket, in, out, userIDToken);
+                        logOut(out, userIDToken);
                         online = false;
                         break;
                     case "disconnect":

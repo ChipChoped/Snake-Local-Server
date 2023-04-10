@@ -34,21 +34,19 @@ public class Response {
         }
     }
 
-    public static void logOut(Socket socket, BufferedReader in, PrintStream out, UserIDToken userIDToken) throws IOException {
-        PrintStream out_ = new PrintStream(socket.getOutputStream());
-
+    public static void logOut(PrintStream out, UserIDToken userIDToken) throws IOException {
         utils.Response response = logOutPOST(userIDToken);
 
         JSONObject jsonResponse = new JSONObject();
 
         if (response.code() == HttpURLConnection.HTTP_OK) {
             jsonResponse.put("type", "return-log-out");
-            out_.println(jsonResponse);
+            out.println(jsonResponse);
         }
         else {
             jsonResponse.put("type", "error");
             jsonResponse.put("message", response.content().get("message"));
-            out_.println(jsonResponse);
+            out.println(jsonResponse);
         }
     }
 }
